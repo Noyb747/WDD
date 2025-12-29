@@ -98,7 +98,7 @@ gcc wdd.c -o wdd.exe -std=c11 -O2 -Wall -Wextra -Wpedantic \
 ```
 
 * `-municode` enables Unicode entry point (`wmain`).
-* `-static-libgcc` + `-static-libstdc++` produce a standalone exe.
+* `-static-libgcc` produce a standalone exe.
 
 Or just use the `compile.bat`.
 
