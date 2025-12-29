@@ -39,7 +39,6 @@ Simply download `wdd.exe` and put it in your `%PATH%` or a tools directory.
 ### Installer
 
 Run `wdd_setup.exe` and follow the wizard to install WDD system‑wide (e.g., `C:\Program Files\WDD`).
-Optionally add WDD to your `PATH`.
 
 > ⚠️ To access raw physical devices like `\\.\PHYSICALDRIVE0`, you **must run your terminal as Administrator**.
 
