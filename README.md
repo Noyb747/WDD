@@ -1,2 +1,2 @@
 # WDD
-Windows DD
+Windows adaptation for DD
