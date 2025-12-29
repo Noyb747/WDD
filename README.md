@@ -31,12 +31,6 @@ Each release contains:
 
 ## Installation
 
-### Portable Use
-
-Simply download `wdd.exe` and put it in your `%PATH%` or a tools directory.
-
-### Installer
-
 Run `wdd_setup.exe` and follow the wizard to install WDD system‑wide (e.g., `C:\Program Files\WDD`).
 
 > ⚠️ To access raw physical devices like `\\.\PHYSICALDRIVE0`, you **must run your terminal as Administrator**.
