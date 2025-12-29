@@ -25,7 +25,6 @@ Get the latest installers and binaries from the **Releases** section:
 
 Each release contains:
 
-* `wdd.exe` – portable executable
 * `wdd_setup.exe` – Windows installer
 
 ---
