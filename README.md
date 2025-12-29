@@ -94,7 +94,7 @@ To build `wdd` yourself using MinGW:
 
 ```bash
 gcc wdd.c -o wdd.exe -std=c11 -O2 -Wall -Wextra -Wpedantic \
-  -Wno-unused-parameter -municode -static-libgcc -static-libstdc++ -s
+  -DWIN32_LEAN_AND_MEAN -municode -static-libgcc -s
 ```
 
 * `-municode` enables Unicode entry point (`wmain`).
