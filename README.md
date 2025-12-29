@@ -1,49 +1,126 @@
 # WDD – Windows `dd` Clone
 
-**WDD** is a lightweight, high-performance Windows-native clone of the classic Unix `dd` utility, written in C. It supports:
-
-- Copying files and raw disks.
-- Custom block sizes (`bs`), skip/seek, count limits.
-- Sparse files and `conv` options (`sync`, `noerror`, `notrunc`, `sparse`).
-- Direct I/O for high-speed transfers.
-- Unicode paths on Windows.
-- Optional progress/status reporting.
+**WDD** is a lightweight, fast, and native Windows implementation of the classic Unix `dd` utility.
+It’s written in C, supports Unicode paths, and provides powerful low‑level block copying and disk imaging features.
 
 ---
 
 ## Features
 
-- ✅ Native Windows API (`ReadFile` / `WriteFile`) for speed.
-- ✅ Supports raw device access (`\\.\PHYSICALDRIVE#`), USB drives, and standard files.
-- ✅ Handles large files efficiently.
-- ✅ Fully supports `--help` and `--version`.
-- ✅ Sparse file support for optimized space usage.
-- ✅ Lightweight single executable with optional InnoSetup installer.
+* ✅ Native Windows API (`ReadFile` / `WriteFile`) for performance
+* ✅ Unicode path support (wide character)
+* ✅ Raw device access (`\\.\PHYSICALDRIVE#`) for imaging disks and USB drives
+* ✅ Sparse file support (`conv=sparse`)
+* ✅ Standard `dd`‑style options: `bs`, `count`, `skip`, `seek`, `conv`, `iflag`, `oflag`, `status`
+* ✅ `--help` and `--version` support
+* ✅ Optionally packaged via an installer (InnoSetup)
+
+---
+
+## Downloads
+
+Get the latest installers and binaries from the **Releases** section:
+
+[GitHub Releases](https://github.com/Noyb747/WDD/releases)
+
+Each release contains:
+
+* `wdd.exe` – portable executable
+* `wdd_setup.exe` – Windows installer
 
 ---
 
 ## Installation
 
-Download the latest `wdd` release from [Releases](https://github.com/yourusername/wdd/releases).
+### Portable Use
 
-**Option 1: Portable**
+Simply download `wdd.exe` and put it in your `%PATH%` or a tools directory.
 
-- Extract `wdd.exe` to any folder.
-- Run directly from a terminal.
+### Installer
 
-**Option 2: Installer**
+Run `wdd_setup.exe` and follow the wizard to install WDD system‑wide (e.g., `C:\Program Files\WDD`).
+Optionally add WDD to your `PATH`.
 
-- Run `wdd_setup.exe` created via InnoSetup.
-- Follow the wizard to install in `C:\Program Files\WDD` (default).
-- Add the installation folder to your `PATH` if desired.
-
-> ⚠️ **Important:** To access raw disks (e.g., `\\.\PHYSICALDRIVE#`), run as Administrator.
+> ⚠️ To access raw physical devices like `\\.\PHYSICALDRIVE0`, you **must run your terminal as Administrator**.
 
 ---
 
-## Usage
+## Usage Examples
 
-### Basic File Copy
+### Copy a File
 
 ```powershell
 wdd if=input.file of=output.file bs=1M
+```
+
+### Block Size, Skip, and Seek
+
+```powershell
+wdd if=source.img of=target.img bs=4M skip=1 seek=1
+```
+
+### Show Progress
+
+```powershell
+wdd if=input of=output bs=1M status=progress
+```
+
+### Direct I/O (Fast)
+
+```powershell
+wdd if=input of=output bs=4M iflag=direct oflag=direct
+```
+
+### Sparse Output
+
+```powershell
+wdd if=input of=output conv=sparse
+```
+
+### Help / Version
+
+```powershell
+wdd --help
+wdd --version
+```
+
+---
+
+## Safety & Best Practices
+
+⚠️ **WDD operates at a low level.** Mistargeted `of=` can overwrite entire disks without confirmation. Carefully verify your device paths before running.
+
+* Always run **as Administrator** for raw disk access.
+* Disconnect drives you do not intend to touch to avoid accidents.
+* Use large block sizes (`bs=4M` or higher) for better performance on large copies.
+
+---
+
+## Build Instructions
+
+To build `wdd` yourself using MinGW:
+
+```bash
+gcc wdd.c -o wdd.exe -std=c11 -O2 -Wall -Wextra -Wpedantic \
+  -Wno-unused-parameter -municode -static-libgcc -static-libstdc++ -s
+```
+
+* `-municode` enables Unicode entry point (`wmain`).
+* `-static-libgcc` + `-static-libstdc++` produce a standalone exe.
+
+---
+
+## License
+
+WDD is released under the **MIT License**.
+
+---
+
+## Contributing
+
+Contributions are welcome!
+
+* ⭐ Star the project
+* 🐛 Report issues
+* 🧠 Suggest enhancements
+* 💻 Submit pull requests
