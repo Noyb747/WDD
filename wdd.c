@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define DEFAULT_BS 512
 
@@ -162,9 +163,9 @@ int wmain(int argc, char **argv) {
     DWORD sec_in = get_sector_size(hin);
     DWORD sec_out = get_sector_size(hout);
 
-    if (o.if_direct && (o.ibs % sec_in))
+    if (o.if_direct && (o.ibs % sec_in != 0))
         die("ibs not aligned to input sector size");
-    if (o.of_direct && (o.obs % sec_out))
+    if (o.of_direct && (o.obs % sec_out != 0))
         die("obs not aligned to output sector size");
 
     if (o.skip) seek_blocks(hin, o.skip, o.ibs);
@@ -172,9 +173,19 @@ int wmain(int argc, char **argv) {
 
     if (o.sparse) set_sparse(hout);
 
+    // Allocate buffer
     SIZE_T bufsize = (SIZE_T)o.ibs;
-    void *buf = VirtualAlloc(NULL, bufsize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-    if (!buf) die("VirtualAlloc");
+    void *buf;
+    if (o.if_direct || o.of_direct) {
+        SYSTEM_INFO si;
+        GetSystemInfo(&si);
+        SIZE_T align = si.dwAllocationGranularity;
+        bufsize = ((bufsize + align - 1) / align) * align;
+        buf = VirtualAlloc(NULL, bufsize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    } else {
+        buf = malloc(bufsize);
+    }
+    if (!buf) die("buffer allocation failed");
 
     uint64_t blocks = 0, bytes = 0;
     DWORD rd, wr;
@@ -205,14 +216,12 @@ int wmain(int argc, char **argv) {
         blocks++;
         bytes += outsz;
 
-        // === STATUS_PROGRESS: print every 100 blocks ===
         if (o.status == STATUS_PROGRESS && (blocks % 100 == 0)) {
             fprintf(stderr, "\r%llu bytes copied", bytes);
             fflush(stderr);
         }
     }
 
-    // Final flush and newline for progress
     FlushFileBuffers(hout);
     if (o.status == STATUS_PROGRESS)
         fprintf(stderr, "\n");
@@ -225,7 +234,11 @@ int wmain(int argc, char **argv) {
             blocks, blocks, bytes);
     }
 
-    VirtualFree(buf, 0, MEM_RELEASE);
+    if (o.if_direct || o.of_direct)
+        VirtualFree(buf, 0, MEM_RELEASE);
+    else
+        free(buf);
+
     CloseHandle(hin);
     CloseHandle(hout);
     return 0;
