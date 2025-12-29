@@ -206,8 +206,8 @@ int wmain(int argc, wchar_t **argv) {
         blocks++;
         bytes += outsz;
 
-        if (o.status == STATUS_PROGRESS && (blocks % 1000 == 0)) {
-            fwprintf(stderr, L"\r%llu bytes copied", bytes);
+        if (o.status == STATUS_PROGRESS && (blocks % 100 == 0)) {
+            fwprintf(stderr, L"\r%llu bytes copied ...", bytes);
         }
     }
 
